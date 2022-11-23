@@ -160,10 +160,10 @@ const mapThing: (o: { error: string, response: any }) => ThingResponse = ({ erro
                 num_ratings: Number(stats.usersrated[0].$.value),
                 average: Number(stats.average[0].$.value),
                 bayes_average: Number(stats.bayesaverage[0].$.value),
-                rank: Number(stats.ranks[0].rank.find(r => r.$.name === 'boardgame').value),
+                rank: Number(stats.ranks[0].rank.find(r => r.$.name === 'boardgame').value) || -1,
                 sub_ranks: stats.ranks[0].rank.filter(f => f.$.name !== 'boardgame').map(f => ({
                     family: f.$.name,
-                    rank: Number(f.$.value)
+                    rank: Number(f.$.value) || -1
                 })),
                 std_dev: Number(stats.stddev[0].$.value),
                 num_owned: Number(stats.owned[0].$.value),

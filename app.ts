@@ -13,8 +13,8 @@ import users from './routes/users';
 
 const fs = require('fs');
 
-collection({ username: 'phildinius', version: true }).then(d => {
-    fs.writeFileSync('json_example3.json', JSON.stringify(d))
+collection({ username: 'phildinius', stats: true }).then(d => {
+    fs.writeFileSync('./examples/json_example3.json', JSON.stringify(d))
 });
 
 export const bggToJson = {

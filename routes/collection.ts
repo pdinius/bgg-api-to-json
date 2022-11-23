@@ -104,6 +104,28 @@ const mapCollection: (o: { error: string, response: any }) => CollectionResponse
             }
             if (language) res.version.language = language.$.value
         }
+        if (i.stats) {
+            const stats = i.stats[0];
+            const rating = stats.rating[0];
+
+            res.stats = {
+                num_ratings: Number(rating.usersrated[0].$.value),
+                average: Number(rating.average[0].$.value),
+                bayes_average: Number(rating.bayesaverage[0].$.value),
+                rank: Number(rating.ranks[0].rank.find(r => r.$.name === 'boardgame').$.value) || -1,
+                sub_ranks: rating.ranks[0].rank.filter(r => r.$.name !== 'boardgame').map(r => ({
+                    family: r.$.name,
+                    rank: Number(r.$.value) || -1
+                })),
+                std_dev: Number(rating.stddev[0].$.value),
+                num_owned: Number(stats.$.numowned),
+                min_players: Number(stats.$.minplayers),
+                max_players: Number(stats.$.maxplayers),
+                playing_time: Number(stats.$.playingtime),
+                min_play_time: Number(stats.$.minplaytime),
+                max_play_time: Number(stats.$.maxplaytime)
+            }
+        }
 
         return res;
     });

@@ -195,6 +195,20 @@ interface Item {
         depth: number;
         weight: number;
     }
+    stats?: {
+        num_ratings: number;
+        average: number;
+        bayes_average: number;
+        rank: number;
+        sub_ranks: Array<SubRank>;
+        std_dev: number;
+        num_owned: number;
+        min_players: number;
+        max_players: number;
+        playing_time: number;
+        min_play_time: number;
+        max_play_time: number;
+    };
 }
 
 interface Collection {
