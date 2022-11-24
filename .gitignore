@@ -1,8 +1,3 @@
-# Compiled js files
-*.js
-*.xml
-examples/
-
 # Logs
 logs
 *.log
