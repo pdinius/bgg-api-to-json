@@ -1,6 +1,6 @@
 {
   "name": "bgg-api-to-json",
-  "version": "1.1.5",
+  "version": "1.1.6",
   "description": "An adapter for for the BGG Api to clean the data up and convert it to JSON.",
   "main": "dist/app.js",
   "types": "dist/app.d.ts",
