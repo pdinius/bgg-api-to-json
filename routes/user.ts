@@ -1,7 +1,7 @@
 import { execute } from '../adapters/axios.adapter';
 import { convert } from '../utils/convertXmlToJson';
 
-interface UserOptions {
+export interface UserOptions {
     username: string;
     buddies?: boolean;
     guilds?: boolean;
@@ -25,7 +25,7 @@ interface TopGame {
     rank: number;
 }
 
-interface UserResponse {
+export interface UserResponse {
     terms_of_use: string;
     id: number;
     username: string;

@@ -2,7 +2,7 @@ import { execute } from '../adapters/axios.adapter';
 import { ThingType } from '../interfaces/general-interfaces';
 import { convert } from '../utils/convertXmlToJson';
 
-interface SearchOptions {
+export interface SearchOptions {
     query: string;
     type?: ThingType | Array<ThingType>;
     exact?: boolean;
@@ -15,7 +15,7 @@ interface SearchItem {
     year_published?: string;
 }
 
-interface SearchResponse {
+export interface SearchResponse {
     terms_of_use: string;
     total_items: number;
     items: Array<SearchItem>;

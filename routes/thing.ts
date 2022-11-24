@@ -125,7 +125,7 @@ interface Thing {
     comments?: Array<BggComment>;
 };
 
-interface ThingOptions {
+export interface ThingOptions {
     id: number | Array<number>;
     type?: ThingType | Array<ThingType>;
     versions?: boolean;
@@ -137,7 +137,7 @@ interface ThingOptions {
     pagesize?: number;
 };
 
-interface ThingResponse {
+export interface ThingResponse {
     terms_of_use: string;
     items: {
         [key: string]: Thing;

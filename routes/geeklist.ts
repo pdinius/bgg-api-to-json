@@ -2,7 +2,7 @@ import { execute } from '../adapters/axios.adapter';
 import { ThingType } from '../interfaces/general-interfaces';
 import { convert } from '../utils/convertXmlToJson';
 
-interface GeeklistOptions {
+export interface GeeklistOptions {
     id: number;
 };
 
@@ -18,7 +18,7 @@ interface GeeklistItem {
     post_body: string;
 }
 
-interface GeeklistResponse {
+export interface GeeklistResponse {
     terms_of_use: string;
     id: number;
     title: string;

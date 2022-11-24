@@ -1,7 +1,7 @@
 import { execute } from '../adapters/axios.adapter';
 import { convert } from '../utils/convertXmlToJson';
 
-interface ForumOptions {
+export interface ForumOptions {
     id: number;
     page?: number;
 };
@@ -15,7 +15,7 @@ interface Thread {
     last_post_date: Date;
 }
 
-interface ForumResponse {
+export interface ForumResponse {
     terms_of_use: string;
     id: number;
     title: string;

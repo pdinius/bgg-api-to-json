@@ -2,7 +2,7 @@ import { execute } from '../adapters/axios.adapter';
 import { LinkItem } from '../interfaces/general-interfaces';
 import { convert } from '../utils/convertXmlToJson';
 
-interface FamilyOptions {
+export interface FamilyOptions {
     id: number | Array<number>;
 };
 
@@ -15,7 +15,7 @@ interface Family {
     games: Array<LinkItem>;
 }
 
-interface FamilyResponse {
+export interface FamilyResponse {
     terms_of_use: string;
     families: Array<Family>;
 };

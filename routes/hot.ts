@@ -1,7 +1,7 @@
 import { execute } from '../adapters/axios.adapter';
 import { convert } from '../utils/convertXmlToJson';
 
-interface HotOptions {
+export interface HotOptions {
     type: 'boardgame' | 'boardgameperson' | 'boardgamecompany';
 };
 
@@ -13,7 +13,7 @@ interface HotItem {
     year_published?: string | null;
 }
 
-interface HotResponse {
+export interface HotResponse {
     terms_of_use: string;
     items: Array<HotItem>;
 };

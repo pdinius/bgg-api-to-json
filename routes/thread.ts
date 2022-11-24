@@ -1,7 +1,7 @@
 import { execute } from '../adapters/axios.adapter';
 import { convert } from '../utils/convertXmlToJson';
 
-interface ThreadOptions {
+export interface ThreadOptions {
     id: number;
     min_article_id?: number;
     min_article_date?: Date;
@@ -18,7 +18,7 @@ interface Post {
     post_body: string;
 }
 
-interface ThreadResponse {
+export interface ThreadResponse {
     terms_of_use: string;
     id: number;
     subject: string;

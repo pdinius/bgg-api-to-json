@@ -2,7 +2,7 @@ import { execute } from '../adapters/axios.adapter';
 import { ThingType } from '../interfaces/general-interfaces';
 import { convert } from '../utils/convertXmlToJson';
 
-interface PlaysOptions {
+export interface PlaysOptions {
     username: string;
     id?: number;
     min_date?: Date;
@@ -35,7 +35,7 @@ interface Play {
     players?: Array<Player>;
 }
 
-interface PlaysResponse {
+export interface PlaysResponse {
     terms_of_use: string;
     user_id: number;
     username: string;

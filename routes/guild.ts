@@ -2,14 +2,14 @@ import { execute } from '../adapters/axios.adapter';
 import { convert } from '../utils/convertXmlToJson';
 
 
-interface GuildOptions {
+export interface GuildOptions {
     id: number;
     members?: boolean;
     sort?: 'username' | 'date';
     page?: number;
 };
 
-interface GuildResponse {
+export interface GuildResponse {
     terms_of_use: string;
     id: number;
     name: string;

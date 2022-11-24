@@ -2,7 +2,7 @@ import { execute } from '../adapters/axios.adapter';
 import { convert } from '../utils/convertXmlToJson';
 import { ThingType, LinkItem, SubRank } from '../interfaces/general-interfaces';
 
-interface CollectionOptions {
+export interface CollectionOptions {
     username: string;
     version?: boolean;
     exclude_subtype?: ThingType | Array<ThingType>;
@@ -80,7 +80,7 @@ interface CollectionItem {
     };
 }
 
-interface CollectionResponse {
+export interface CollectionResponse {
     terms_of_use: string;
     total_items: number;
     pub_date: Date;
