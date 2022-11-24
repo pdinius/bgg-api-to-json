@@ -161,7 +161,7 @@ const mapCollection: (o: { error: string | null, response: any }) => CollectionR
             const stats = i.stats[0];
             const rating = stats.rating[0];
 
-            res.rating = rating.$.value;
+            res.rating = Number(rating.$.value);
 
             res.stats = {
                 num_ratings: Number(rating.usersrated[0].$.value),
