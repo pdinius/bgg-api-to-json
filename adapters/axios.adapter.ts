@@ -1,9 +1,8 @@
 const axios = require('axios');
 
-// Load env variables
-const dotenv = require('dotenv');
-dotenv.config();
-let { BGG_URI, BGG_URI_LEGACY, MAX_RETRY } = process.env;
+const BGG_URI = 'https://boardgamegeek.com/xmlapi2/';
+const BGG_URI_LEGACY = 'https://boardgamegeek.com/xmlapi/';
+const MAX_RETRY = 5;
 
 const client = axios.create();
 
