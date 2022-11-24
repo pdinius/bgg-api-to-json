@@ -40,6 +40,7 @@ interface CollectionItem {
     year_published?: string | null;
     image?: string;
     thumbnail?: string;
+    rating?: number;
     status: {
         own: boolean;
         prev_own: boolean;
@@ -159,6 +160,8 @@ const mapCollection: (o: { error: string | null, response: any }) => CollectionR
         if (i.stats) {
             const stats = i.stats[0];
             const rating = stats.rating[0];
+
+            res.rating = rating.$.value;
 
             res.stats = {
                 num_ratings: Number(rating.usersrated[0].$.value),
