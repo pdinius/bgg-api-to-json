@@ -1,17 +1,18 @@
 {
   "name": "bgg-api-to-json",
-  "version": "1.1.0",
-  "description": "",
-  "main": "app.js",
+  "version": "1.1.1",
+  "description": "An adapter for for the BGG Api to clean the data up and convert it to JSON.",
+  "main": "dist/app.js",
+  "types": "dist/app.d.ts",
   "scripts": {
-    "start": "tsc app.ts && node app.js"
+    "start": "tsc app.ts && node dist/app.js",
+    "build": "tsc"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/pdinius/bgg-api-to-json.git"
   },
-  "keywords": [],
-  "author": "",
+  "author": "Phil Dinius",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/pdinius/bgg-api-to-json/issues"
