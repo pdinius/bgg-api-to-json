@@ -31,37 +31,7 @@ interface LanguageDependenceVote {
     }>;
 };
 
-interface Category {
-    id: number;
-    value: string;
-}
-
-interface Mechanic {
-    id: number;
-    value: string;
-}
-
-interface Family {
-    id: number;
-    value: string;
-}
-
-interface Expansion {
-    id: number;
-    value: string;
-}
-
-interface Designer {
-    id: number;
-    value: string;
-}
-
-interface Artist {
-    id: number;
-    value: string;
-}
-
-interface Publisher {
+interface LinkItem {
     id: number;
     value: string;
 }
@@ -69,17 +39,17 @@ interface Publisher {
 interface Version {
     id: number;
     name: string;
-    thumbnail: string;
-    image: string;
-    year_published: string;
+    thumbnail_uri: string;
+    image_uri: string;
+    year_published: string | null;
     product_code: string;
     language: string;
     width: number | null;
     length: number | null;
     depth: number | null;
     weight: number | null;
-    publishers: Array<Publisher>;
-    artists: Array<Artist>;
+    publishers: Array<LinkItem>;
+    artists: Array<LinkItem>;
 }
 
 interface Video {
@@ -115,122 +85,15 @@ interface BggComment {
     comment?: string;
 }
 
-interface Thing {
-    id: number;
-    type: ThingType;
-    base_game?: {
-        id: number;
-        name: string;
-    };
-    name: string;
-    alternate_names: Array<string>;
-    thumbnail: string;
-    image: string;
-    description: string;
-    year_published: string;
-    min_players: number;
-    max_players: number;
-    recommended_player_count: PlayerCountVote;
-    recommended_player_age: PlayerAgeVote;
-    language_dependence: LanguageDependenceVote;
-    playing_time: number;
-    min_play_time: number;
-    max_play_time: number;
-    min_age: number;
-    categories: Array<Category>;
-    mechanics: Array<Mechanic>;
-    families: Array<Family>;
-    expansions: Array<Expansion>;
-    designers: Array<Designer>;
-    artists: Array<Artist>;
-    publishers: Array<Publisher>;
-    versions?: Array<Version>;
-    videos?: Array<Video>;
-    stats?: {
-        num_ratings: number;
-        average: number;
-        bayes_average: number;
-        rank: number;
-        sub_ranks: Array<SubRank>;
-        std_dev: number;
-        num_owned: number;
-        num_trading: number;
-        num_wanting: number;
-        num_wishing: number;
-        avg_weight: number;
-    };
-    listings?: Array<Listing>;
-    comments?: Array<BggComment>;
-}
-
-interface Item {
-    id: number;
-    name: string;
-    original_name?: string;
-    type: ThingType;
-    year_published?: string;
-    image?: string;
-    thumbnail?: string;
-    status: {
-        own: boolean;
-        prev_own: boolean;
-        for_trade: boolean;
-        want: boolean;
-        want_to_play: boolean;
-        want_to_buy: boolean;
-        wishlist: boolean;
-        preordered: boolean;
-        last_modified: Date;
-    }
-    num_plays?: number;
-    version?: {
-        name: string;
-        publisher?: Publisher;
-        artist?: Artist;
-        language?: string;
-        year_published: string;
-        product_code: string;
-        width: number;
-        length: number;
-        depth: number;
-        weight: number;
-    }
-    stats?: {
-        num_ratings: number;
-        average: number;
-        bayes_average: number;
-        rank: number;
-        sub_ranks: Array<SubRank>;
-        std_dev: number;
-        num_owned: number;
-        min_players: number;
-        max_players: number;
-        playing_time: number;
-        min_play_time: number;
-        max_play_time: number;
-    };
-}
-
-interface Collection {
-    total_items: number;
-    pub_date: Date;
-    items: Array<Item>;
-}
-
 export {
     ThingType,
     PlayerCountVote,
     PlayerAgeVote,
     LanguageDependenceVote,
-    Category,
-    Mechanic,
-    Family,
-    Expansion,
-    Designer,
-    Artist,
-    Publisher,
-    Thing,
-    Collection,
-    BggComment,
-    Item
+    LinkItem,
+    Version,
+    Video,
+    SubRank,
+    Listing,
+    BggComment
 }

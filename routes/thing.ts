@@ -1,6 +1,54 @@
 import { execute } from '../adapters/axios.adapter';
 import { convert } from '../utils/convertXmlToJson';
-import { ThingType, Thing, BggComment } from '../interfaces/general-interfaces';
+import { ThingType, BggComment, PlayerCountVote, PlayerAgeVote, LanguageDependenceVote, LinkItem, Version, Video, SubRank, Listing } from '../interfaces/general-interfaces';
+
+interface Thing {
+    id: number;
+    type: ThingType;
+    base_game?: {
+        id: number;
+        name: string;
+    };
+    name: string;
+    alternate_names: Array<string>;
+    thumbnail_uri: string;
+    image_uri: string;
+    description: string;
+    year_published: string | null;
+    min_players: number;
+    max_players: number;
+    recommended_player_count: PlayerCountVote;
+    recommended_player_age: PlayerAgeVote;
+    language_dependence: LanguageDependenceVote;
+    playing_time: number;
+    min_play_time: number;
+    max_play_time: number;
+    min_age: number;
+    categories: Array<LinkItem>;
+    mechanics: Array<LinkItem>;
+    families: Array<LinkItem>;
+    expansions: Array<LinkItem>;
+    designers: Array<LinkItem>;
+    artists: Array<LinkItem>;
+    publishers: Array<LinkItem>;
+    versions?: Array<Version>;
+    videos?: Array<Video>;
+    stats?: {
+        num_ratings: number;
+        average: number;
+        bayes_average: number;
+        rank: number;
+        sub_ranks: Array<SubRank>;
+        std_dev: number;
+        num_owned: number;
+        num_trading: number;
+        num_wanting: number;
+        num_wishing: number;
+        avg_weight: number;
+    };
+    listings?: Array<Listing>;
+    comments?: Array<BggComment>;
+};
 
 interface ThingOptions {
     id: number | Array<number>;
@@ -19,9 +67,9 @@ interface ThingResponse {
     items: {
         [key: string]: Thing;
     }
-}
+};
 
-const mapThing: (o: { error: string, response: any }) => ThingResponse = ({ error, response }) => {
+const mapThing: (o: { error: string | null, response: any }) => ThingResponse = ({ error, response }) => {
     if (error) {
         throw Error(error);
     }
@@ -48,10 +96,10 @@ const mapThing: (o: { error: string, response: any }) => ThingResponse = ({ erro
             type: item.$.type,
             name: item.name.find(n => n.$.type === 'primary').$.value.trim(),
             alternate_names: item.name.filter(n => n.$.type === 'alternate').map(n => n.$.value.trim()),
-            thumbnail: item.thumbnail[0],
-            image: item.image[0],
+            thumbnail_uri: item.thumbnail[0],
+            image_uri: item.image[0],
             description: item.description[0].trim(),
-            year_published: item.yearpublished[0].$.value,
+            year_published: item.yearpublished[0].$.value === '0' ? null : item.yearpublished[0].$.value,
             min_players: Number(item.minplayers[0].$.value),
             max_players: Number(item.maxplayers[0].$.value),
             recommended_player_count: {
@@ -119,9 +167,9 @@ const mapThing: (o: { error: string, response: any }) => ThingResponse = ({ erro
                 return {
                     id: Number(v.$.id),
                     name: v.name.find(n => n.$.type === 'primary').$.value,
-                    thumbnail: v.thumbnail[0],
-                    image: v.image[0],
-                    year_published: v.yearpublished[0].$.value,
+                    thumbnail_uri: v.thumbnail[0],
+                    image_uri: v.image[0],
+                    year_published: v.yearpublished[0].$.value === '0' ? null : v.yearpublished[0].$.value,
                     product_code: v.productcode[0].$.value,
                     language: v.link.find(l => l.$.type === 'language').$.value,
                     width: Number(v.width.$.value),
@@ -205,7 +253,7 @@ const mapThing: (o: { error: string, response: any }) => ThingResponse = ({ erro
         terms_of_use: response.items.$.termsofuse,
         items: things
     };
-}
+};
 
 export const thing = (options: ThingOptions, signal?: AbortSignal): Promise<ThingResponse> => {
     if (options.page && !Number.isInteger(options.page)) {

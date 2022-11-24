@@ -1,11 +1,10 @@
 import { execute } from '../adapters/axios.adapter';
 import { convert } from '../utils/convertXmlToJson';
-import { ThingType, Collection, Item } from '../interfaces/general-interfaces';
+import { ThingType, LinkItem, SubRank } from '../interfaces/general-interfaces';
 
 interface CollectionOptions {
     username: string;
     version?: boolean;
-    subtype?: ThingType;
     exclude_subtype?: ThingType | Array<ThingType>;
     id?: number | Array<number>;
     brief?: boolean;
@@ -33,16 +32,67 @@ interface CollectionOptions {
     modified_since?: Date;
 };
 
-interface CollectionResponse extends Collection {
-    terms_of_use: string;
+interface CollectionItem {
+    id: number;
+    name: string;
+    original_name?: string;
+    type: ThingType;
+    year_published?: string | null;
+    image?: string;
+    thumbnail?: string;
+    status: {
+        own: boolean;
+        prev_own: boolean;
+        for_trade: boolean;
+        want: boolean;
+        want_to_play: boolean;
+        want_to_buy: boolean;
+        wishlist: boolean;
+        preordered: boolean;
+        last_modified: Date;
+    }
+    num_plays?: number;
+    version?: {
+        name: string;
+        publisher?: LinkItem;
+        artist?: LinkItem;
+        language?: string;
+        year_published: string | null;
+        product_code: string;
+        width: number;
+        length: number;
+        depth: number;
+        weight: number;
+    }
+    stats?: {
+        num_ratings: number;
+        average: number;
+        bayes_average: number;
+        rank: number;
+        sub_ranks: Array<SubRank>;
+        std_dev: number;
+        num_owned: number;
+        min_players: number;
+        max_players: number;
+        playing_time: number;
+        min_play_time: number;
+        max_play_time: number;
+    };
 }
 
-const mapCollection: (o: { error: string, response: any }) => CollectionResponse = ({ error, response }) => {
+interface CollectionResponse {
+    terms_of_use: string;
+    total_items: number;
+    pub_date: Date;
+    items: Array<CollectionItem>;
+};
+
+const mapCollection: (o: { error: string | null, response: any }) => CollectionResponse = ({ error, response }) => {
     if (error) {
         throw Error(error);
     }
 
-    let items: Array<Item> = response.items.item.map(i => {
+    let items: Array<CollectionItem> = response.items.item.map(i => {
         const itemStatus = i.status[0].$;
         let status = {
             own: itemStatus.own === '1' ? true : false,
@@ -56,7 +106,7 @@ const mapCollection: (o: { error: string, response: any }) => CollectionResponse
             last_modified: new Date(itemStatus.lastmodified)
         }
 
-        let res: Item = {
+        let res: CollectionItem = {
             id: Number(i.$.objectid),
             name: i.name[0]._,
             type: i.$.subtype,
@@ -72,7 +122,9 @@ const mapCollection: (o: { error: string, response: any }) => CollectionResponse
         if (i.numplays) {
             res.num_plays = Number(i.numplays[0]);
         }
-        if (i.yearpublished) {
+        if (i.yearpublished === '0') {
+            res.year_published = null;
+        } else if (i.yearpublished) {
             res.year_published = i.yearpublished[0]
         }
         if (i.originalname) {
@@ -86,7 +138,7 @@ const mapCollection: (o: { error: string, response: any }) => CollectionResponse
 
             res.version = {
                 name: version.name[0].$.value,
-                year_published: version.yearpublished[0].$.value,
+                year_published: version.yearpublished[0].$.value === '0' ? null : version.yearpublished[0].$.value,
                 product_code: version.productcode[0].$.value,
                 width: Number(version.width[0].$.value),
                 length: Number(version.length[0].$.value),
@@ -136,12 +188,9 @@ const mapCollection: (o: { error: string, response: any }) => CollectionResponse
         pub_date: new Date(response.items.$.pubdate),
         items
     }
-}
+};
 
-export const collection = (options: CollectionOptions, signal?: AbortSignal): Promise<CollectionResponse> => {
-    if (options.exclude_subtype === 'boardgame') {
-        throw Error("You cannot choose to exclude the 'boardgame' subtype");
-    }
+export const collection = async (options: CollectionOptions, signal?: AbortSignal): Promise<CollectionResponse> => {
     if (options.wishlist_priority && (options.wishlist_priority < 1 || options.wishlist_priority > 5 || !Number.isInteger(options.wishlist_priority))) {
         throw Error('Wishlist priority must be at least 1, no greater than 5, and an integer')
     }
@@ -156,13 +205,14 @@ export const collection = (options: CollectionOptions, signal?: AbortSignal): Pr
     if (options.version) {
         optionsObject.version = '1';
     }
-    if (options.subtype) {
-        optionsObject.subtype = options.subtype;
-    }
     if (options.exclude_subtype) {
-        optionsObject.excludesubtype = Array.isArray(options.exclude_subtype)
-            ? options.exclude_subtype.join(',')
-            : options.exclude_subtype;
+        if (options.exclude_subtype === 'boardgame' || (options.exclude_subtype.length === 1 && options.exclude_subtype.includes('boardgame'))) {
+            optionsObject.subtype = 'boardgameexpansion';
+        } else {
+            optionsObject.excludesubtype = Array.isArray(options.exclude_subtype)
+                ? options.exclude_subtype.join(',')
+                : options.exclude_subtype;
+        }
     }
     if (options.id) {
         optionsObject.id = Array.isArray(options.id)
@@ -239,7 +289,25 @@ export const collection = (options: CollectionOptions, signal?: AbortSignal): Pr
         optionsObject.modifiedsince = new Date(options.modified_since).toISOString().split('T')[0].slice(2);
     }
 
-    return execute('collection', optionsObject, signal)
-        .then(convert)
-        .then(mapCollection);
+    const xmlCollection = await execute('collection', optionsObject, signal)
+    const jsonCollection = await convert(xmlCollection);
+    const res = mapCollection(jsonCollection);
+
+    if (!options.exclude_subtype?.includes('boardgameexpansion')) {
+        delete optionsObject.excludesubtype;
+        const xmlCollectionOnlyExpansions = await execute('collection', {
+            ...optionsObject,
+            subtype: 'boardgameexpansion'
+        }, signal)
+        const jsonCollectionOnlyExpansions = await convert(xmlCollectionOnlyExpansions);
+        const expansionNames = jsonCollectionOnlyExpansions.response.items.item.map(i => i.name[0]._);
+
+        for (let item of res.items) {
+            if (expansionNames.includes(item.name)) {
+                item.type = 'boardgameexpansion';
+            }
+        }
+    }
+
+    return res;
 };

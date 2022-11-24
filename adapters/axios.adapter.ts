@@ -3,7 +3,7 @@ const axios = require('axios');
 // Load env variables
 const dotenv = require('dotenv');
 dotenv.config();
-let { BGG_URI, MAX_RETRY } = process.env;
+let { BGG_URI, BGG_URI_LEGACY, MAX_RETRY } = process.env;
 
 const client = axios.create();
 
@@ -12,7 +12,10 @@ client.interceptors.response.use((res) => {
 
     // give in after 5 attempts
     if (retry === Number(MAX_RETRY)) {
-        return res;
+        return {
+            data: null,
+            error: Error('Reached maximum retry count')
+        };
     }
 
     // processing the request
@@ -35,15 +38,27 @@ client.interceptors.response.use((res) => {
         });
     }
 
-    return res;
+    return {
+        data: res.data
+    };
 }, (error) => {
-    console.error(error);
-    return error;
+    return {
+        data: null,
+        error
+    };
 })
 
 export const execute = (route: string, options: { [key: string]: string }, signal?: AbortSignal) => {
-    let uri = `${BGG_URI}${route}`
+    let uri: string;
     
+    if (options.useLegacy === 'true') {
+        uri = `${BGG_URI_LEGACY}${route}/${options.key}`;
+        delete options.key;
+        delete options.useLegacy;
+    } else {
+        uri = `${BGG_URI}${route}`;
+    }
+
     if (Object.keys(options).length) {
         let params = Object.entries(options).map((val) => val.join('=')).join('&');
         uri += `?${params}`;
