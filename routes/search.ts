@@ -31,7 +31,7 @@ const mapSearch: (o: { error: string | null, response: any }) => SearchResponse 
     return {
         terms_of_use: items.$.termsofuse,
         total_items: Number(items.$.total),
-        items: items.item.map(i => {
+        items: items.item.map((i: any) => {
             let res: SearchItem = {
                 id: Number(i.$.id),
                 name: i.name[0].$.value,
@@ -43,7 +43,7 @@ const mapSearch: (o: { error: string | null, response: any }) => SearchResponse 
             }
 
             return res;
-        }).filter(i => /boardgame/.test(i.subtype))
+        }).filter((i: any) => /boardgame/.test(i.subtype))
     }
 };
 

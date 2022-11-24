@@ -1,5 +1,5 @@
 import { execute } from '../adapters/axios.adapter';
-import { convert } from '../utils/convertXmlToJson';
+import { convert, timeout } from '../utils/convertXmlToJson';
 import { ThingType, LinkItem, SubRank } from '../interfaces/general-interfaces';
 
 export interface CollectionOptions {
@@ -93,7 +93,7 @@ const mapCollection: (o: { error: string | null, response: any }) => CollectionR
         throw Error(error);
     }
 
-    let items: Array<CollectionItem> = response.items.item.map(i => {
+    let items: Array<CollectionItem> = response.items.item.map((i: any) => {
         const itemStatus = i.status[0].$;
         let status = {
             own: itemStatus.own === '1' ? true : false,
@@ -133,9 +133,9 @@ const mapCollection: (o: { error: string | null, response: any }) => CollectionR
         }
         if (i.version) {
             const version = i.version[0].item[0];
-            const publisher = version.link.find(v => v.$?.type === 'boardgamepublisher');
-            const artist = version.link.find(v => v.$?.type === 'boardgameartist');
-            const language = version.link.find(v => v.$?.type === 'language');
+            const publisher = version.link.find((v: any) => v.$?.type === 'boardgamepublisher');
+            const artist = version.link.find((v: any) => v.$?.type === 'boardgameartist');
+            const language = version.link.find((v: any) => v.$?.type === 'language');
 
             res.version = {
                 name: version.name[0].$.value,
@@ -167,8 +167,8 @@ const mapCollection: (o: { error: string | null, response: any }) => CollectionR
                 num_ratings: Number(rating.usersrated[0].$.value),
                 average: Number(rating.average[0].$.value),
                 bayes_average: Number(rating.bayesaverage[0].$.value),
-                rank: Number(rating.ranks[0].rank.find(r => r.$.name === 'boardgame').$.value) || -1,
-                sub_ranks: rating.ranks[0].rank.filter(r => r.$.name !== 'boardgame').map(r => ({
+                rank: Number(rating.ranks[0].rank.find((r: any) => r.$.name === 'boardgame').$.value) || -1,
+                sub_ranks: rating.ranks[0].rank.filter((r: any) => r.$.name !== 'boardgame').map((r: any) => ({
                     family: r.$.name,
                     rank: Number(r.$.value) || -1
                 })),
@@ -298,12 +298,13 @@ export const collection = async (options: CollectionOptions, signal?: AbortSigna
 
     if (!options.exclude_subtype?.includes('boardgameexpansion')) {
         delete optionsObject.excludesubtype;
+        await timeout(2000);
         const xmlCollectionOnlyExpansions = await execute('collection', {
             ...optionsObject,
             subtype: 'boardgameexpansion'
         }, signal)
         const jsonCollectionOnlyExpansions = await convert(xmlCollectionOnlyExpansions);
-        const expansionNames = jsonCollectionOnlyExpansions.response.items.item.map(i => i.name[0]._);
+        const expansionNames = jsonCollectionOnlyExpansions.response.items.item.map((i: any) => i.name[0]._);
 
         for (let item of res.items) {
             if (expansionNames.includes(item.name)) {

@@ -30,11 +30,11 @@ const mapFamily: (o: { error: string | null, response: any }) => FamilyResponse 
     for (let item of response.items.item) {
         families.push({
             id: Number(item.$.id),
-            name: item.name.find(n => n.$.type === 'primary').$.value,
+            name: item.name.find((n: any) => n.$.type === 'primary').$.value,
             image_uri: item.image[0],
             thumbnail_uri: item.thumbnail[0],
             description: item.description[0],
-            games: item.link.map(l => ({
+            games: item.link.map((l: any) => ({
                 id: Number(l.$.id),
                 value: l.$.value
             }))

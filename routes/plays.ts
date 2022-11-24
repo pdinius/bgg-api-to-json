@@ -57,12 +57,12 @@ const mapPlays: (o: { error: string | null, response: any }) => PlaysResponse = 
         username: plays.$.username,
         total: Number(plays.$.total),
         page: Number(plays.$.page),
-        plays: plays.play.map(p => {
+        plays: plays.play.map((p: any) => {
             let subtype: ThingType;
 
-            if (p.item[0].subtypes[0].subtype.some(s => s.$.value === 'boardgameaccessory')) {
+            if (p.item[0].subtypes[0].subtype.some((s: any) => s.$.value === 'boardgameaccessory')) {
                 subtype = 'boardgameaccessory';
-            } else if (p.item[0].subtypes[0].subtype.some(s => s.$.value === 'boardgameexpansion')) {
+            } else if (p.item[0].subtypes[0].subtype.some((s: any) => s.$.value === 'boardgameexpansion')) {
                 subtype = 'boardgameexpansion';
             } else {
                 subtype = 'boardgame';
@@ -85,7 +85,7 @@ const mapPlays: (o: { error: string | null, response: any }) => PlaysResponse = 
                 res.location = p.$.location;
             }
             if (p.players) {
-                res.players = p.players[0].player.map(({ $: l }) => {
+                res.players = p.players[0].player.map(({ $: l }: any) => {
                     let res: Player = {
                         username: l.username,
                         user_id: Number(l.userid)

@@ -28,7 +28,7 @@ const mapHot: (o: { error: string | null, response: any }) => HotResponse = ({ e
 
     return {
         terms_of_use: items.$.termsofuse,
-        items: items.item.map(i => {
+        items: items.item.map((i: any) => {
             let hotItem: HotItem = {
                 id: Number(i.$.id),
                 name: i.name[0].$.value,

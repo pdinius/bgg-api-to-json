@@ -37,7 +37,7 @@ const mapForum: (o: { error: string | null, response: any }) => ForumResponse = 
         num_threads: Number(response.forum.$.numthreads),
         num_posts: Number(response.forum.$.numposts),
         last_post_date: new Date(response.forum.$.lastpostdate),
-        threads: response.forum.threads[0].thread.map(t => ({
+        threads: response.forum.threads[0].thread.map((t: any) => ({
             id: Number(t.$.id),
             subject: t.$.subject,
             author: t.$.author,

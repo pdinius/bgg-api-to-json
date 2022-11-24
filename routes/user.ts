@@ -74,7 +74,7 @@ const mapUser: (o: { error: string | null, response: any }) => UserResponse = ({
             const buddyInfo = user.buddies[0];
             res.buddy_count = Number(buddyInfo.$.total);
             res.buddy_page = Number(buddyInfo.$.page);
-            res.buddies = buddyInfo.buddy.map(({ $: b }) => ({
+            res.buddies = buddyInfo.buddy.map(({ $: b }: any) => ({
                 id: Number(b.id),
                 username: b.name
             }))
@@ -84,14 +84,14 @@ const mapUser: (o: { error: string | null, response: any }) => UserResponse = ({
             const guildInfo = user.guilds[0];
             res.guild_count = Number(guildInfo.$.total);
             res.guild_page = Number(guildInfo.$.page);
-            res.guilds = guildInfo.guild.map(({ $: g }) => ({
+            res.guilds = guildInfo.guild.map(({ $: g }: any) => ({
                 id: Number(g.id),
                 name: g.name
             }))
         }
 
         if (user.top) {
-            res.top_games = user.top[0].item.map(({ $: t }) => ({
+            res.top_games = user.top[0].item.map(({ $: t }: any) => ({
                 id: Number(t.id),
                 name: t.name,
                 rank: Number(t.rank)

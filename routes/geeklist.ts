@@ -48,7 +48,7 @@ const mapGeeklist: (o: { error: string | null, response: any }) => GeeklistRespo
         last_edit_date: new Date(geeklist.editdate[0]),
         num_items: Number(geeklist.numitems[0]),
         likes: Number(geeklist.thumbs[0]),
-        items: geeklist.item.map(g => ({
+        items: geeklist.item.map((g: any) => ({
             id: Number(g.$.objectid),
             name: g.$.objectname,
             type: g.$.subtype,

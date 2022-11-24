@@ -40,7 +40,7 @@ const mapThread: (o: { error: string | null, response: any }) => ThreadResponse 
         subject: thread.subject[0],
         num_posts: Number(thread.$.numarticles),
         link: thread.$.link,
-        posts: thread.articles[0].article.map(a => ({
+        posts: thread.articles[0].article.map((a: any) => ({
             id: Number(a.$.id),
             author: a.$.username,
             link: a.$.link,

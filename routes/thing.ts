@@ -154,23 +154,23 @@ const mapThing: (o: { error: string | null, response: any }) => ThingResponse = 
     for (let item of response.items.item) {
         const id = item.$.id;
         // votes
-        const playerCountVote = item.poll.find(p => p.$.name === 'suggested_numplayers');
-        const playerAgeVote = item.poll.find(p => p.$.name === 'suggested_playerage');
-        const languageVote = item.poll.find(p => p.$.name === 'language_dependence');
+        const playerCountVote = item.poll.find((p: any) => p.$.name === 'suggested_numplayers');
+        const playerAgeVote = item.poll.find((p: any) => p.$.name === 'suggested_playerage');
+        const languageVote = item.poll.find((p: any) => p.$.name === 'language_dependence');
         // links
-        const categories = item.link.filter(l => l.$.type === 'boardgamecategory');
-        const mechanics = item.link.filter(l => l.$.type === 'boardgamemechanic');
-        const families = item.link.filter(l => l.$.type === 'boardgamefamily');
-        const expansions = item.link.filter(l => l.$.type === 'boardgameexpansion' && l.$.inbound === undefined);
-        const designers = item.link.filter(l => l.$.type === 'boardgamedesigner');
-        const artists = item.link.filter(l => l.$.type === 'boardgameartist');
-        const publishers = item.link.filter(l => l.$.type === 'boardgamepublisher');
+        const categories = item.link.filter((l: any) => l.$.type === 'boardgamecategory');
+        const mechanics = item.link.filter((l: any) => l.$.type === 'boardgamemechanic');
+        const families = item.link.filter((l: any) => l.$.type === 'boardgamefamily');
+        const expansions = item.link.filter((l: any) => l.$.type === 'boardgameexpansion' && l.$.inbound === undefined);
+        const designers = item.link.filter((l: any) => l.$.type === 'boardgamedesigner');
+        const artists = item.link.filter((l: any) => l.$.type === 'boardgameartist');
+        const publishers = item.link.filter((l: any) => l.$.type === 'boardgamepublisher');
 
         things[id] = {
             id: Number(item.$.id),
             type: item.$.type,
-            name: item.name.find(n => n.$.type === 'primary').$.value.trim(),
-            alternate_names: item.name.filter(n => n.$.type === 'alternate').map(n => n.$.value.trim()),
+            name: item.name.find((n: any) => n.$.type === 'primary').$.value.trim(),
+            alternate_names: item.name.filter((n: any) => n.$.type === 'alternate').map((n: any) => n.$.value.trim()),
             thumbnail_uri: item.thumbnail[0],
             image_uri: item.image[0],
             description: item.description[0].trim(),
@@ -179,23 +179,23 @@ const mapThing: (o: { error: string | null, response: any }) => ThingResponse = 
             max_players: Number(item.maxplayers[0].$.value),
             recommended_player_count: {
                 total_votes: Number(playerCountVote.$.totalvotes),
-                results: playerCountVote.results.map(v => ({
+                results: playerCountVote.results.map((v: any) => ({
                     num_players: v.$.numplayers,
-                    votes_best: Number(v.result.find(r => r.$.value === 'Best').$.numvotes),
-                    votes_recommended: Number(v.result.find(r => r.$.value === 'Recommended').$.numvotes),
-                    votes_not_recommended: Number(v.result.find(r => r.$.value === 'Not Recommended').$.numvotes),
+                    votes_best: Number(v.result.find((r: any) => r.$.value === 'Best').$.numvotes),
+                    votes_recommended: Number(v.result.find((r: any) => r.$.value === 'Recommended').$.numvotes),
+                    votes_not_recommended: Number(v.result.find((r: any) => r.$.value === 'Not Recommended').$.numvotes),
                 }))
             },
             recommended_player_age: {
                 total_votes: Number(playerAgeVote.$.totalvotes),
-                results: playerAgeVote.results[0].result.map(v => ({
+                results: playerAgeVote.results[0].result.map((v: any) => ({
                     age: v.$.value,
                     votes: Number(v.$.numvotes)
                 }))
             },
             language_dependence: {
                 total_votes: Number(languageVote.$.totalvotes),
-                results: languageVote.results[0].result.map(v => ({
+                results: languageVote.results[0].result.map((v: any) => ({
                     value: v.$.value,
                     votes: Number(v.$.numvotes)
                 }))
@@ -204,58 +204,58 @@ const mapThing: (o: { error: string | null, response: any }) => ThingResponse = 
             min_play_time: Number(item.minplaytime[0].$.value),
             max_play_time: Number(item.maxplaytime[0].$.value),
             min_age: Number(item.minage[0].$.value),
-            categories: categories.map(v => ({
+            categories: categories.map((v: any) => ({
                 id: Number(v.$.id),
                 value: v.$.value
             })),
-            mechanics: mechanics.map(v => ({
+            mechanics: mechanics.map((v: any) => ({
                 id: Number(v.$.id),
                 value: v.$.value
             })),
-            families: families.map(v => ({
+            families: families.map((v: any) => ({
                 id: Number(v.$.id),
                 value: v.$.value
             })),
-            expansions: expansions.map(v => ({
+            expansions: expansions.map((v: any) => ({
                 id: Number(v.$.id),
                 value: v.$.value
             })),
-            designers: designers.map(v => ({
+            designers: designers.map((v: any) => ({
                 id: Number(v.$.id),
                 value: v.$.value
             })),
-            artists: artists.map(v => ({
+            artists: artists.map((v: any) => ({
                 id: Number(v.$.id),
                 value: v.$.value
             })),
-            publishers: publishers.map(v => ({
+            publishers: publishers.map((v: any) => ({
                 id: Number(v.$.id),
                 value: v.$.value
             }))
         }
 
         if (item.versions) {
-            things[id].versions = item.versions.item.map(v => {
-                const versionPublishers = v.link.filter(l => l.$.type === 'boardgamepublisher');
-                const versionArtists = v.link.filter(l => l.$.type === 'boardgameartist');
+            things[id].versions = item.versions.item.map((v: any) => {
+                const versionPublishers = v.link.filter((l: any) => l.$.type === 'boardgamepublisher');
+                const versionArtists = v.link.filter((l: any) => l.$.type === 'boardgameartist');
 
                 return {
                     id: Number(v.$.id),
-                    name: v.name.find(n => n.$.type === 'primary').$.value,
+                    name: v.name.find((n: any) => n.$.type === 'primary').$.value,
                     thumbnail_uri: v.thumbnail[0],
                     image_uri: v.image[0],
                     year_published: v.yearpublished[0].$.value === '0' ? null : v.yearpublished[0].$.value,
                     product_code: v.productcode[0].$.value,
-                    language: v.link.find(l => l.$.type === 'language').$.value,
+                    language: v.link.find((l: any) => l.$.type === 'language').$.value,
                     width: Number(v.width.$.value),
                     length: Number(v.length.$.value),
                     depth: Number(v.depth.$.value),
                     weight: Number(v.weight.$.value),
-                    publishers: versionPublishers.map(v => ({
+                    publishers: versionPublishers.map((v: any) => ({
                         id: Number(v.$.id),
                         value: v.$.value
                     })),
-                    artists: versionArtists.map(v => ({
+                    artists: versionArtists.map((v: any) => ({
                         id: Number(v.$.id),
                         value: v.$.value
                     }))
@@ -264,7 +264,7 @@ const mapThing: (o: { error: string | null, response: any }) => ThingResponse = 
         }
 
         if (item.videos) {
-            things[id].videos = item.videos.map(v => ({
+            things[id].videos = item.videos.map((v: any) => ({
                 id: Number(v.$.id),
                 title: v.$.title,
                 category: v.$.category,
@@ -283,8 +283,8 @@ const mapThing: (o: { error: string | null, response: any }) => ThingResponse = 
                 num_ratings: Number(stats.usersrated[0].$.value),
                 average: Number(stats.average[0].$.value),
                 bayes_average: Number(stats.bayesaverage[0].$.value),
-                rank: Number(stats.ranks[0].rank.find(r => r.$.name === 'boardgame').value) || -1,
-                sub_ranks: stats.ranks[0].rank.filter(f => f.$.name !== 'boardgame').map(f => ({
+                rank: Number(stats.ranks[0].rank.find((r: any) => r.$.name === 'boardgame').value) || -1,
+                sub_ranks: stats.ranks[0].rank.filter((f: any) => f.$.name !== 'boardgame').map((f: any) => ({
                     family: f.$.name,
                     rank: Number(f.$.value) || -1
                 })),
@@ -300,13 +300,13 @@ const mapThing: (o: { error: string | null, response: any }) => ThingResponse = 
         if (item.marketplacelistings) {
             const listings = item.marketplacelistings[0].listing;
 
-            things[id].listings = listings.map(l => ({
+            things[id].listings = listings.map((l: any) => ({
                 list_date: new Date(l.listdate[0].$.value),
                 price: {
                     currency: l.price[0].$.currency,
                     value: l.price[0].$.value
                 },
-                condition: l.condition[0].$.value.replace(/verygood|likenew/, m => m === 'verygood' ? 'very good' : 'like new'),
+                condition: l.condition[0].$.value.replace(/verygood|likenew/, (m: any) => m === 'verygood' ? 'very good' : 'like new'),
                 notes: l.notes[0].$.value,
                 link: l.link[0].$.href
             }));
@@ -315,7 +315,7 @@ const mapThing: (o: { error: string | null, response: any }) => ThingResponse = 
         if (item.comments) {
             const comments = item.comments[0].comment;
 
-            things[id].comments = comments.map(c => {
+            things[id].comments = comments.map((c: any) => {
                 let res: BggComment = { username: c.$.username };
                 if (c.$.rating !== 'N/A') res.rating = Number(c.$.rating);
                 if (c.$.value) res.comment = c.$.value;
