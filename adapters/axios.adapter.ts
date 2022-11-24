@@ -1,4 +1,4 @@
-const axios = require('axios');
+import axios, { AxiosResponse } from 'axios';
 
 const BGG_URI = 'https://boardgamegeek.com/xmlapi2/';
 const BGG_URI_LEGACY = 'https://boardgamegeek.com/xmlapi/';
@@ -6,15 +6,12 @@ const MAX_RETRY = 5;
 
 const client = axios.create();
 
-client.interceptors.response.use((res: any) => {
-    const { config: { url, retry, signal }, status } = res;
+client.interceptors.response.use(res => {
+    const { config: { url, data: { retry }, signal }, status } = res;
 
     // give in after 5 attempts
     if (retry === Number(MAX_RETRY)) {
-        return {
-            data: null,
-            error: Error('Reached maximum retry count')
-        };
+        throw Error('Reached maximum retry count');
     }
 
     // processing the request
@@ -22,7 +19,7 @@ client.interceptors.response.use((res: any) => {
         return new Promise((resolve, _) => {
             setTimeout(async () => {
                 console.log('retrying...');
-                client.get(url, { retry: retry + 1, signal }).then((res: any) => resolve(res));
+                client.get(url!, { data: { retry: retry + 1 }, signal }).then((res: any) => resolve(res));
             }, 2000 * retry)
         });
     }
@@ -32,19 +29,14 @@ client.interceptors.response.use((res: any) => {
         return new Promise((resolve, _) => {
             setTimeout(async () => {
                 console.log('retrying...');
-                client.get(url, { retry: retry + 1, signal }).then((res: any) => resolve(res));
+                client.get(url!, { data: { retry: retry + 1 }, signal }).then((res: any) => resolve(res));
             }, 10000)
         });
     }
 
-    return {
-        data: res.data
-    };
-}, (error: Error) => {
-    return {
-        data: null,
-        error
-    };
+    return res;
+}, (error) => {
+    return error;
 })
 
 export const execute = (route: string, options: { [key: string]: string }, signal?: AbortSignal) => {
@@ -63,5 +55,8 @@ export const execute = (route: string, options: { [key: string]: string }, signa
         uri += `?${params}`;
     }
 
-    return client.get(uri, { retry: 0, signal });
+    return client.get(uri, {
+        data: { retry: 0 },
+        signal
+    });
 }

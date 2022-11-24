@@ -5,7 +5,7 @@
   "main": "dist/app.js",
   "types": "dist/app.d.ts",
   "scripts": {
-    "start": "tsc app.ts && node dist/app.js",
+    "start": "tsc && node dist/app.js",
     "build": "tsc"
   },
   "repository": {
