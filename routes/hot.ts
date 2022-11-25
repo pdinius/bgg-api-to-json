@@ -1,5 +1,4 @@
 import { execute } from '../adapters/axios.adapter';
-import { convert } from '../utils/convertXmlToJson';
 
 export interface HotOptions {
     type: 'boardgame' | 'boardgameperson' | 'boardgamecompany';
@@ -18,13 +17,8 @@ export interface HotResponse {
     items: Array<HotItem>;
 };
 
-const mapHot: (o: { error: string | null, response: any }) => HotResponse = ({ error, response }) => {
-    if (error) {
-        throw Error(error);
-    }
-    
-    const { items } = response;
-    console.log(items);
+const mapHot: (o: { data: any }) => HotResponse = ({ data }) => {
+    const { items } = data;
 
     return {
         terms_of_use: items.$.termsofuse,
@@ -52,7 +46,5 @@ export const hot = (options: HotOptions, signal?: AbortSignal): Promise<HotRespo
 
     optionsObject.type = options.type;
 
-    return execute('hot', optionsObject, signal)
-            .then(convert)
-            .then(mapHot);
+    return execute('hot', optionsObject, signal).then(mapHot);
 };

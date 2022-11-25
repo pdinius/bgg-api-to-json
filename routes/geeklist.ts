@@ -1,6 +1,5 @@
 import { execute } from '../adapters/axios.adapter';
 import { ThingType } from '../interfaces/general-interfaces';
-import { convert } from '../utils/convertXmlToJson';
 
 export interface GeeklistOptions {
     id: number;
@@ -31,12 +30,8 @@ export interface GeeklistResponse {
     items: Array<GeeklistItem>;
 };
 
-const mapGeeklist: (o: { error: string | null, response: any }) => GeeklistResponse = ({ error, response }) => {
-    if (error) {
-        throw Error(error);
-    }
-
-    const { geeklist } = response;
+const mapGeeklist: (o: { data: any }) => GeeklistResponse = ({ data }) => {
+    const { geeklist } = data;
 
     return {
         terms_of_use: geeklist.$.termsofuse,
@@ -68,7 +63,5 @@ export const geeklist = (options: GeeklistOptions, signal?: AbortSignal): Promis
     optionsObject.key = String(options.id);
     optionsObject.useLegacy = 'true';
 
-    return execute('geeklist', optionsObject, signal)
-            .then(convert)
-            .then(mapGeeklist);
+    return execute('geeklist', optionsObject, signal).then(mapGeeklist);
 };

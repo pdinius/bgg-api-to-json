@@ -1,5 +1,4 @@
 import { execute } from '../adapters/axios.adapter';
-import { convert } from '../utils/convertXmlToJson';
 import { ThingType, LinkItem, SubRank } from '../interfaces/general-interfaces';
 
 interface PlayerCountVote {
@@ -92,9 +91,9 @@ interface Thing {
     year_published: string | null;
     min_players: number;
     max_players: number;
-    recommended_player_count: PlayerCountVote;
-    recommended_player_age: PlayerAgeVote;
-    language_dependence: LanguageDependenceVote;
+    recommended_player_count?: PlayerCountVote;
+    recommended_player_age?: PlayerAgeVote;
+    language_dependence?: LanguageDependenceVote;
     playing_time: number;
     min_play_time: number;
     max_play_time: number;
@@ -144,14 +143,10 @@ export interface ThingResponse {
     }
 };
 
-const mapThing: (o: { error: string | null, response: any }) => ThingResponse = ({ error, response }) => {
-    if (error) {
-        throw Error(error);
-    }
-
+const mapThing: (o: { data: any }) => ThingResponse = ({ data }) => {
     let things: { [key: string]: Thing } = {};
 
-    for (let item of response.items.item) {
+    for (let item of data.items.item) {
         const id = item.$.id;
         // votes
         const playerCountVote = item.poll.find((p: any) => p.$.name === 'suggested_numplayers');
@@ -232,7 +227,7 @@ const mapThing: (o: { error: string | null, response: any }) => ThingResponse = 
                 id: Number(v.$.id),
                 value: v.$.value
             }))
-        }
+        };
 
         if (item.versions) {
             things[id].versions = item.versions.item.map((v: any) => {
@@ -325,7 +320,7 @@ const mapThing: (o: { error: string | null, response: any }) => ThingResponse = 
     }
 
     return {
-        terms_of_use: response.items.$.termsofuse,
+        terms_of_use: data.items.$.termsofuse,
         items: things
     };
 };
@@ -369,7 +364,5 @@ export const thing = (options: ThingOptions, signal?: AbortSignal): Promise<Thin
         optionsObject.pagesize = String(options.pagesize);
     }
 
-    return execute('thing', optionsObject, signal)
-        .then(convert)
-        .then(mapThing);
+    return execute('thing', optionsObject, signal).then(mapThing);
 };

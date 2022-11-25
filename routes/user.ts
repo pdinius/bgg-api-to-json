@@ -1,5 +1,4 @@
 import { execute } from '../adapters/axios.adapter';
-import { convert } from '../utils/convertXmlToJson';
 
 export interface UserOptions {
     username: string;
@@ -47,13 +46,9 @@ export interface UserResponse {
     top_games?: Array<TopGame>;
 };
 
-const mapUser: (o: { error: string | null, response: any }) => UserResponse = ({ error, response }) => {
+const mapUser: (o: { data: any }) => UserResponse = ({ data }) => {
     try {
-        if (error) {
-            throw Error(error);
-        }
-
-        const { user } = response;
+        const { user } = data;
 
         const res: UserResponse = {
             terms_of_use: user.$.termsofuse,
@@ -100,8 +95,7 @@ const mapUser: (o: { error: string | null, response: any }) => UserResponse = ({
 
         return res;
     } catch (e) {
-        console.log(e);
-        return {} as UserResponse;
+        throw e;
     }
 };
 
@@ -124,7 +118,5 @@ export const user = (options: UserOptions, signal?: AbortSignal): Promise<UserRe
         optionsObject.page = String(options.page);
     }
 
-    return execute('user', optionsObject, signal)
-        .then(convert)
-        .then(mapUser);
+    return execute('user', optionsObject, signal).then(mapUser);
 };

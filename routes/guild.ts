@@ -1,6 +1,4 @@
 import { execute } from '../adapters/axios.adapter';
-import { convert } from '../utils/convertXmlToJson';
-
 
 export interface GuildOptions {
     id: number;
@@ -28,14 +26,8 @@ export interface GuildResponse {
     };
 };
 
-const mapGuild: (o: { error: string | null, response: any }) => GuildResponse = ({ error, response }) => {
-    if (error) {
-        throw Error(error);
-    }
-
-    const { guild } = response;
-
-    console.log(guild.location);
+const mapGuild: (o: { data: any }) => GuildResponse = ({ data }) => {
+    const { guild } = data;
 
     return {
         terms_of_use: guild.$.termsofuse,
@@ -74,7 +66,5 @@ export const guild = (options: GuildOptions, signal?: AbortSignal): Promise<Guil
         optionsObject.page = String(options.page);
     }
 
-    return execute('guild', optionsObject, signal)
-            .then(convert)
-            .then(mapGuild);
+    return execute('guild', optionsObject, signal).then(mapGuild);
 };

@@ -1,16 +1,17 @@
-import axios, { AxiosResponse } from 'axios';
+import axios from 'axios';
+import { convert } from '../utils/convertXmlToJson';
 
 const BGG_URI = 'https://boardgamegeek.com/xmlapi2/';
 const BGG_URI_LEGACY = 'https://boardgamegeek.com/xmlapi/';
 const MAX_RETRY = 5;
 
-const client = axios.create();
+let retries = 0;
 
-client.interceptors.response.use(res => {
-    const { config: { url, data: { retry }, signal }, status } = res;
+axios.interceptors.response.use(res => {
+    const { config: { url, signal }, status } = res;
 
     // give in after 5 attempts
-    if (retry === Number(MAX_RETRY)) {
+    if (++retries === Number(MAX_RETRY)) {
         throw Error('Reached maximum retry count');
     }
 
@@ -18,9 +19,9 @@ client.interceptors.response.use(res => {
     if (status === 202) {
         return new Promise((resolve, _) => {
             setTimeout(async () => {
-                console.log('retrying...');
-                client.get(url!, { data: { retry: retry + 1 }, signal }).then((res: any) => resolve(res));
-            }, 2000 * retry)
+                console.log('still processing...');
+                axios.get(url!, { signal }).then((res: any) => resolve(res));
+            }, 5000)
         });
     }
 
@@ -28,15 +29,15 @@ client.interceptors.response.use(res => {
     if (status === 429) {
         return new Promise((resolve, _) => {
             setTimeout(async () => {
-                console.log('retrying...');
-                client.get(url!, { data: { retry: retry + 1 }, signal }).then((res: any) => resolve(res));
+                console.log('backing off...');
+                axios.get(url!, { signal }).then((res: any) => resolve(res));
             }, 10000)
         });
     }
 
-    return res;
+    return convert(res);
 }, (error) => {
-    return error;
+    throw error;
 })
 
 export const execute = (route: string, options: { [key: string]: string }, signal?: AbortSignal) => {
@@ -55,8 +56,5 @@ export const execute = (route: string, options: { [key: string]: string }, signa
         uri += `?${params}`;
     }
 
-    return client.get(uri, {
-        data: { retry: 0 },
-        signal
-    });
+    return axios.get(uri, { signal });
 }

@@ -1,5 +1,4 @@
 import { execute } from '../adapters/axios.adapter';
-import { convert } from '../utils/convertXmlToJson';
 
 export interface ForumOptions {
     id: number;
@@ -25,19 +24,15 @@ export interface ForumResponse {
     threads: Array<Thread>;
 };
 
-const mapForum: (o: { error: string | null, response: any }) => ForumResponse = ({ error, response }) => {
-    if (error) {
-        throw Error(error);
-    }
-
+const mapForum: (o: { data: any }) => ForumResponse = ({ data }) => {
     return {
-        terms_of_use: response.forum.$.termsofuse,
-        id: Number(response.forum.$.id),
-        title: response.forum.$.title,
-        num_threads: Number(response.forum.$.numthreads),
-        num_posts: Number(response.forum.$.numposts),
-        last_post_date: new Date(response.forum.$.lastpostdate),
-        threads: response.forum.threads[0].thread.map((t: any) => ({
+        terms_of_use: data.forum.$.termsofuse,
+        id: Number(data.forum.$.id),
+        title: data.forum.$.title,
+        num_threads: Number(data.forum.$.numthreads),
+        num_posts: Number(data.forum.$.numposts),
+        last_post_date: new Date(data.forum.$.lastpostdate),
+        threads: data.forum.threads[0].thread.map((t: any) => ({
             id: Number(t.$.id),
             subject: t.$.subject,
             author: t.$.author,
@@ -57,7 +52,5 @@ export const forum = (options: ForumOptions, signal?: AbortSignal): Promise<Foru
         optionsObject.page = String(options.page);
     }
 
-    return execute('forum', optionsObject, signal)
-            .then(convert)
-            .then(mapForum);
+    return execute('forum', optionsObject, signal).then(mapForum);
 };

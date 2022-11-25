@@ -1,5 +1,4 @@
 import { execute } from '../adapters/axios.adapter';
-import { convert } from '../utils/convertXmlToJson';
 
 export interface ThreadOptions {
     id: number;
@@ -27,12 +26,8 @@ export interface ThreadResponse {
     posts: Array<Post>;
 };
 
-const mapThread: (o: { error: string | null, response: any }) => ThreadResponse = ({ error, response }) => {
-    if (error) {
-        throw Error(error);
-    }
-
-    const { thread } = response;
+const mapThread: (o: { data: any }) => ThreadResponse = ({ data }) => {
+    const { thread } = data;
 
     return ({
         terms_of_use: thread.$.termsofuse,
@@ -67,7 +62,5 @@ export const thread = (options: ThreadOptions, signal?: AbortSignal): Promise<Th
         optionsObject.count = String(options.count);
     }
 
-    return execute('thread', optionsObject, signal)
-            .then(convert)
-            .then(mapThread);
+    return execute('thread', optionsObject, signal).then(mapThread);
 };

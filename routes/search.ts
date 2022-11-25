@@ -1,6 +1,5 @@
 import { execute } from '../adapters/axios.adapter';
 import { ThingType } from '../interfaces/general-interfaces';
-import { convert } from '../utils/convertXmlToJson';
 
 export interface SearchOptions {
     query: string;
@@ -21,12 +20,8 @@ export interface SearchResponse {
     items: Array<SearchItem>;
 };
 
-const mapSearch: (o: { error: string | null, response: any }) => SearchResponse = ({ error, response }) => {
-    if (error) {
-        throw Error(error);
-    }
-
-    const { items } = response;
+const mapSearch: (o: { data: any }) => SearchResponse = ({ data }) => {
+    const { items } = data;
 
     return {
         terms_of_use: items.$.termsofuse,
@@ -59,7 +54,5 @@ export const search = (options: SearchOptions, signal?: AbortSignal): Promise<Se
         optionsObject.exact = '1';
     }
 
-    return execute('search', optionsObject, signal)
-            .then(convert)
-            .then(mapSearch);
+    return execute('search', optionsObject, signal).then(mapSearch);
 };

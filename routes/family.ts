@@ -20,14 +20,10 @@ export interface FamilyResponse {
     families: Array<Family>;
 };
 
-const mapFamily: (o: { error: string | null, response: any }) => FamilyResponse = ({ error, response }) => {
-    if (error) {
-        throw Error(error);
-    }
-
+const mapFamily: (o: { data: any }) => FamilyResponse = ({ data }) => {
     let families: Array<Family> = []; 
 
-    for (let item of response.items.item) {
+    for (let item of data.items.item) {
         families.push({
             id: Number(item.$.id),
             name: item.name.find((n: any) => n.$.type === 'primary').$.value,
@@ -42,7 +38,7 @@ const mapFamily: (o: { error: string | null, response: any }) => FamilyResponse 
     }
 
     return {
-        terms_of_use: response.items.$.termsofuse,
+        terms_of_use: data.items.$.termsofuse,
         families
     }
 };
@@ -56,7 +52,5 @@ export const family = (options: FamilyOptions, signal?: AbortSignal): Promise<Fa
 
     optionsObject.id = Array.isArray(options.id) ? options.id.join(',') : String(options.id);
 
-    return execute('family', optionsObject, signal)
-            .then(convert)
-            .then(mapFamily);
+    return execute('family', optionsObject, signal).then(mapFamily);
 };

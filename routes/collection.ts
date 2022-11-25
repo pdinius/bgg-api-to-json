@@ -1,6 +1,6 @@
 import { execute } from '../adapters/axios.adapter';
-import { convert, timeout } from '../utils/convertXmlToJson';
 import { ThingType, LinkItem, SubRank } from '../interfaces/general-interfaces';
+import { timeout } from '../utils/timeout';
 
 export interface CollectionOptions {
     username: string;
@@ -88,12 +88,8 @@ export interface CollectionResponse {
     items: Array<CollectionItem>;
 };
 
-const mapCollection: (o: { error: string | null, response: any }) => CollectionResponse = ({ error, response }) => {
-    if (error) {
-        throw Error(error);
-    }
-
-    let items: Array<CollectionItem> = response.items.item.map((i: any) => {
+const mapCollection: (o: { data: any }) => CollectionResponse = ({ data }) => {
+    let items: Array<CollectionItem> = data.items.item.map((i: any) => {
         const itemStatus = i.status[0].$;
         let status = {
             own: itemStatus.own === '1' ? true : false,
@@ -186,9 +182,9 @@ const mapCollection: (o: { error: string | null, response: any }) => CollectionR
     });
 
     return {
-        terms_of_use: response.items.$.termsofuse,
-        total_items: Number(response.items.$.totalitems),
-        pub_date: new Date(response.items.$.pubdate),
+        terms_of_use: data.items.$.termsofuse,
+        total_items: Number(data.items.$.totalitems),
+        pub_date: new Date(data.items.$.pubdate),
         items
     }
 };
@@ -292,26 +288,28 @@ export const collection = async (options: CollectionOptions, signal?: AbortSigna
         optionsObject.modifiedsince = new Date(options.modified_since).toISOString().split('T')[0].slice(2);
     }
 
-    const xmlCollection = await execute('collection', optionsObject, signal)
-    const jsonCollection = await convert(xmlCollection);
-    const res = mapCollection(jsonCollection);
+    try {
+        const totalCollection = await execute('collection', optionsObject, signal);
+        const res = mapCollection(totalCollection);
 
-    if (!options.exclude_subtype?.includes('boardgameexpansion')) {
-        delete optionsObject.excludesubtype;
-        await timeout(2000);
-        const xmlCollectionOnlyExpansions = await execute('collection', {
-            ...optionsObject,
-            subtype: 'boardgameexpansion'
-        }, signal)
-        const jsonCollectionOnlyExpansions = await convert(xmlCollectionOnlyExpansions);
-        const expansionNames = jsonCollectionOnlyExpansions.response.items.item.map((i: any) => i.name[0]._);
+        if (!options.exclude_subtype?.includes('boardgameexpansion')) {
+            delete optionsObject.excludesubtype;
+            await timeout(2000);
+            const collectionOnlyExpansions = await execute('collection', {
+                ...optionsObject,
+                subtype: 'boardgameexpansion'
+            }, signal)
+            const expansionNames = collectionOnlyExpansions.data.items.item.map((i: any) => i.name[0]._);
 
-        for (let item of res.items) {
-            if (expansionNames.includes(item.name)) {
-                item.type = 'boardgameexpansion';
+            for (let item of res.items) {
+                if (expansionNames.includes(item.name)) {
+                    item.type = 'boardgameexpansion';
+                }
             }
         }
-    }
 
-    return res;
+        return res;
+    } catch (error) {
+        throw error;
+    }
 };

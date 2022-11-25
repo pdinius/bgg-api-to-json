@@ -1,6 +1,5 @@
 import { execute } from '../adapters/axios.adapter';
 import { ThingType } from '../interfaces/general-interfaces';
-import { convert } from '../utils/convertXmlToJson';
 
 export interface PlaysOptions {
     username: string;
@@ -44,12 +43,8 @@ export interface PlaysResponse {
     plays: Array<Play>;
 };
 
-const mapPlays: (o: { error: string | null, response: any }) => PlaysResponse = ({ error, response }) => {
-    if (error) {
-        throw Error(error);
-    }
-
-    const { plays } = response;
+const mapPlays: (o: { data: any }) => PlaysResponse = ({ data }) => {
+    const { plays } = data;
 
     return {
         terms_of_use: plays.$.termsofuse,
@@ -140,7 +135,5 @@ export const plays = (options: PlaysOptions, signal?: AbortSignal): Promise<Play
         optionsObject.page = String(options.page);
     }
 
-    return execute('plays', optionsObject, signal)
-        .then(convert)
-        .then(mapPlays);
+    return execute('plays', optionsObject, signal).then(mapPlays);
 };
