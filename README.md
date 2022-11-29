@@ -30,6 +30,6 @@ The `bggApiToJson` object has the following methods corresponding to the similar
 
 Each one returns a promise that resolves to a JSON with the returned data. The `bggApiToJson` object also contains pascal-cased types for these response JSON as well as the request options JSON that each method takes as a parameter, named `[BggThingName]Response` and `[BggThingName]Options` respectively.
 
-(e.g., if you wanted the type definition for the response from the user method, you would import `ResponseUser`.)
+(e.g., if you wanted the type definition for the response from the user method, you would import `UserResponse`.)
 
 For more information on the structure and type definitions of each method's parameters and returns, see the wiki. (coming soon)
